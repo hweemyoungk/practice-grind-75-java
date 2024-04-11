@@ -1,6 +1,8 @@
 package PartitionEqualSubsetSum_416;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /*Given an integer array nums, return true if you can partition the array into two subsets such that the sum of the elements in both subsets is equal or false otherwise.
 
@@ -31,19 +33,20 @@ class Solution {
         if ((sum % 2) == 1) return false;
         int half = sum >> 1;
         this.nums = nums;
-        return canPartition(0, half);
+        return canPartition(0, half, sum);
     }
 
-    private boolean canPartition(int iCurr, int targetSum) {
+    private boolean canPartition(int iCurr, int targetSum, int maxSum) {
         if (targetSum == 0) return true;
-        if (targetSum < 0) return false;
-        if (iCurr == nums.length) return false;
         int[] pair = {iCurr, targetSum};
-        if (unpartitionables.contains(pair)) return false;
+        if (targetSum < 0 || maxSum < targetSum || iCurr == nums.length || unpartitionables.contains(pair)) {
+            unpartitionables.add(pair);
+            return false;
+        }
         // Case1: partition includes iCurr
-        if (canPartition(iCurr + 1, targetSum - nums[iCurr])) return true;
+        if (canPartition(iCurr + 1, targetSum - nums[iCurr], maxSum - nums[iCurr])) return true;
         // Case2: partition doesn't include iCurr
-        if (canPartition(iCurr + 1, targetSum)) return true;
+        if (canPartition(iCurr + 1, targetSum, maxSum - nums[iCurr])) return true;
         unpartitionables.add(pair);
         return false;
     }
